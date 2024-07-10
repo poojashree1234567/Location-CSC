@@ -1,0 +1,185 @@
+{% extends 'html/base.html' %}
+{% load static %}
+
+{% block content %}
+  <!-- Content wrapper -->
+  <div class="content-wrapper">
+    <!-- Content -->
+    <div class="container-xxl flex-grow-1 container-p-y">
+      <h4 class="fw-bold py-3 mb-4">
+        <span class="text-muted fw-light">Location/</a>Country
+      </h4>
+      <div class="container-fluid flex-grow-1 container-p-y">
+        {% if messages %}
+            {% for message in messages %}
+                {% if message.tags == 'success' %}
+                <div class="alert alert-success" role="alert">
+                  {{message}}
+                </div>
+                {% elif message.tags == 'error' %}
+                <div class="alert alert-danger alert-dismissible" role="alert">
+                  {{message}}
+                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endif %}
+            {% endfor %}
+        </ul>
+        {% endif %}
+        <!-- Country Form-->
+        <div class="row">
+          <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <h5 class="mb-0">Country Form</h5>
+            </div>
+            <div class="card-body">
+              <form action="{% url 'country' %}" enctype="multipart/form-data" method="post">
+                {% csrf_token %}
+                <div class="row mb-3">
+                  <div class="col-md-6">
+                    <label class="form-label" for="basic-icon-default-fullname">Country Name</label>
+                    <div class="input-group input-group-merge">
+                      <span id="bx bx-buildings me-2" class="input-group-text">
+                        <i class="bx bx-user"></i>
+                      </span>
+                      <input type="text" class="form-control" id="basic-icon-default-fullname" placeholder="India" name="country_name" required/>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label" for="basic-icon-default-company">Slug</label>
+                    <div class="input-group input-group-merge">
+                      <span id="bx bx-hash me-2" class="input-group-text">
+                        <i class="bx bx-buildings"></i>
+                      </span>
+                      <input type="text" id="basic-icon-default-company" class="form-control" placeholder="Slug"  name="slug" required />
+                    </div>
+                  </div>
+                </div>
+                <div class="row mb-3">
+                  <div class="col-md-6">
+                    <label class="form-label">Country Code</label>
+                    <div class="input-group input-group-merge">
+                      <span class="input-group-text">
+                        <i class="bx bx-globe me-2"></i>
+                      </span>
+                      <input type="text" id="basic-icon-default-email" class="form-control" placeholder="Code" name="code" required/>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <label for="formFile" class="form-label">Flag</label>
+                    <input class="form-control" type="file" id="formFile" name="flag" required>
+                  </div>
+                </div>
+                <div class="form-check mt-3 mb-3">
+                  <input class="form-check-input" type="checkbox" value="1" id="defaultCheck1" name="state_available"/>
+                  <label class="form-check-label" for="state_available"> State Available </label>
+                </div>
+                <button type="submit" class="btn btn-primary">Save</button>
+              </form>
+            </div>
+          </div>
+        </div>
+        <!--/ Country Form -->
+
+        <!-- Country Table -->
+        <div class="card">
+          <h5 class="card-header">Country Table</h5>
+          <div class="table-responsive text-nowrap">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Sr. No.</th>
+                  <th>Country Name</th>
+                  <th>Flag</th>
+                  <th>Code</th>
+                  <th>Add State/City</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody class="table-border-bottom-0">
+                {% for item in countryobj %}
+                <tr>
+                  <td><i class="fab fa-angular fa-lg text-danger me-3"></i><strong>{{ forloop.counter }}</strong></td>
+                  <td>{{item.name}}</td>
+                  <td>
+                    <ul class="list-unstyled users-list m-0 avatar-group d-flex align-items-center">
+                      <li
+                        data-bs-toggle="tooltip"
+                        data-popup="tooltip-custom"
+                        data-bs-placement="top"
+                        class="avatar avatar-xs pull-up"
+                        title="Lilian Fuller">
+                        {% if item.flag %}
+                        <img src="{{item.flag.url}}" alt="Avatar" class="rounded-circle" />
+                        {% else %}
+                        <img src="path/to/default/avatar.jpg" alt="Default Avatar" class="rounded-circle" />
+                        {% endif %}
+                      </li>
+                    </ul>
+                    <td>{{item.code}}</td>
+
+                    {% if item.is_state_available %}
+                    <td><a href="{% url 'state' item.slug %}"><button type="button" class="btn btn-outline-primary">Add state</span></td></a>
+                    {% else %}
+                    <td><a href="{% url 'city' item.slug %}"><button type="button" class="btn btn-outline-primary">Add City</span></td></a>
+                    {% endif %}
+
+                    <td><a href="{% url 'country' item.slug %}">
+                    {% if item.is_active %}
+                    <span class="badge bg-label-success me-1">Active</span>
+                    {% else %}
+                    <span class="badge bg-label-danger me-1">In-active</span>
+                    {% endif %}
+                    </a></td>
+                  <td>
+                    <div class="dropdown">
+                      <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
+                        <i class="bx bx-dots-vertical-rounded"></i>
+                      </button>
+                      <div class="dropdown-menu">
+                        <a class="dropdown-item" href="{% url 'countupdate' item.slug%}"><i class="bx bx-edit-alt me-1"></i> Edit</a
+                        >
+                        <form action="{% url 'country' item.slug%}" method="post">
+                          {% csrf_token %}
+                          <button  class="dropdown-item" ><i class="bx bx-trash me-1"></i> Delete</button>
+                        </form>
+                        
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+            <nav aria-label="Page navigation example">
+              <ul class="pagination justify-content-center">
+                  {% if countryobj.has_previous %}
+                      <li class="page-item">
+                          <a class="page-link" href="?page={{ countryobj.previous_page_number }}" aria-label="Previous">
+                              <span aria-hidden="true">&laquo;</span>
+                          </a>
+                      </li>
+                  {% endif %}
+                  {% for num in countryobj.paginator.page_range %}
+                      {% if countryobj.number == num %}
+                          <li class="page-item active"><a class="page-link" href="#">{{ num }}</a></li>
+                      {% elif num > countryobj.number|add:'-3' and num < countryobj.number|add:'3' %}
+                          <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+                      {% endif %}
+                  {% endfor %}
+                  {% if countryobj.has_next %}
+                      <li class="page-item">
+                          <a class="page-link" href="?page={{ countryobj.next_page_number }}" aria-label="Next">
+                              <span aria-hidden="true">&raquo;</span>
+                          </a>
+                      </li>
+                  {% endif %}
+              </ul>
+          </nav>
+          </div>
+        </div>
+        <!-- /Table -->
+      </div>
+    </div>
+  </div>
+{% endblock %}

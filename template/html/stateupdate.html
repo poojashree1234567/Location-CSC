@@ -1,0 +1,81 @@
+{% extends 'html/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="content-wrapper">
+    <div class="container-xxl flex-grow-1 container-p-y">
+        <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Update State</span></h4>
+        <div class="container-fluid flex-grow-1 container-p-y">
+            {% if messages %}
+                {% for message in messages %}
+                    {% if message.tags == 'success' %}
+                        <div class="alert alert-success" role="alert">{{ message }}</div>
+                    {% elif message.tags == 'error' %}
+                        <div class="alert alert-danger alert-dismissible" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+
+            <div class="row">
+                <div class="card mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Update State Form</h5>
+                    </div>
+                    <div class="card-body">
+                        <form action="{% url 'stateupdate' stateobj.slug %}" method="post">
+                            {% csrf_token %}
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label" for="basic-icon-default-fullname">Country Name</label>
+                                    <div class="input-group input-group-merge">
+                                        <span id="basic-icon-default-fullname2" class="input-group-text">
+                                            <i class="bx bx-user"></i>
+                                        </span>
+                                        <input type="text" class="form-control" id="basic-icon-default-fullname" value="{{ countryobj.name }}" placeholder="Country Name" name="country_name" disabled>
+                                        <input type="hidden" class="form-control" value="{{ countryobj.slug }}" id="country_slug" name="country_slug" />
+                                    </div>
+                                </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label" for="state_name">State Name</label>
+                                    <div class="input-group input-group-merge">
+                                        <span class="input-group-text"><i class="bx bx-world"></i></span>
+                                        <input type="text" class="form-control" id="state_name" name="state_name" value="{{ stateobj.name }}" placeholder="State Name" />
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" for="state_slug">Slug</label>
+                                    <div class="input-group input-group-merge">
+                                        <span class="input-group-text"><i class="bx bx-hash"></i></span>
+                                        <input type="text" class="form-control" id="state_slug" name="state_slug" value="{{ stateobj.slug }}" placeholder="slug" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label" for="language">Language</label>
+                                    <div class="input-group input-group-merge">
+                                        <span class="input-group-text"><i class="bx bx-book"></i></span>
+                                        <input type="text" class="form-control" id="language" name="language" value="{{ stateobj.language }}" placeholder="Language" />
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" for="population">Population</label>
+                                    <div class="input-group input-group-merge">
+                                        <span class="input-group-text"><i class="bx bx-group"></i></span>
+                                        <input type="number" class="form-control" id="population" name="population" value="{{ stateobj.population }}" placeholder="Population" />
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Update</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

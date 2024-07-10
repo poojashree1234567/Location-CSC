@@ -1,0 +1,60 @@
+{% extends 'html/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="content-wrapper">
+    <div class="container-xxl flex-grow-1 container-p-y">
+        <h4 class="fw-bold py-3 mb-4">
+            <span class="text-muted fw-light"><a href="{% url 'cityupdate' cityobj.slug %}" style="color: grey;">City/</a></span>Update City
+        </h4>
+        <div class="container-fluid flex-grow-1 container-p-y">
+            {% if messages %}
+                {% for message in messages %}
+                    {% if message.tags == 'success' %}
+                        <div class="alert alert-success" role="alert">{{ message }}</div>
+                    {% elif message.tags == 'error' %}
+                        <div class="alert alert-danger alert-dismissible" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+
+            <div class="row">
+                <div class="card mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Add City Form</h5>
+                    </div>
+                    <div class="card-body">
+                        
+                        <form action="{% url 'cityupdate' cityobj.slug %}" method="post">
+                            {% csrf_token %}
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label" for="country_name">Country Name</label>
+                                    <input type="text" class="form-control" id="country_name" value="{{ countryobj.name }}" disabled>
+                                    <input type="hidden" id="country_id" name="country_id" value="{{ countryobj.slug }}">
+                                </div>
+                                <div class="col-md-6" id="state-container">
+                                    <label class="form-label" for="state_name">State Name</label>
+                                    <input type="text" class="form-control" id="state_name" value="{{ stateobj.name }}" disabled>
+                                    <input type="hidden" id="state_slug" name="state_slug" value="{{ stateobj.slug }}">
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label" for="city_name">City Name</label>
+                                    <input type="text" class="form-control" id="city_name" value="{{ cityobj.name }}" name="city_name" placeholder="Mumbai" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" for="slug">Slug</label>
+                                    <input type="text" class="form-control" id="slug" value="{{ cityobj.slug }}" name="city_slug" placeholder="slug" required>
+                                </div>
+                            </div>
+                            <a href="{% url 'cityupdate' cityobj.slug %}"><button type="submit" class="btn btn-primary">Update</button></a>
+                        </form>
+                    </div>
+                </div>
+            </div>
+{% endblock %}

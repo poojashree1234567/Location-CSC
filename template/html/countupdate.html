@@ -1,0 +1,74 @@
+{% extends 'html/base.html' %}
+{% load static %}
+
+{% block content %}
+  <!-- Content wrapper -->
+  <div class="content-wrapper">
+    <!-- Content -->
+    <div class="container-xxl flex-grow-1 container-p-y">
+      <h4 class="fw-bold py-3 mb-4">
+        <span class="text-muted fw-light"><a href="{% url 'country' %}" style="color: grey;">Country/</a></span> Update Country
+      </h4>
+      <div class="container-fluid flex-grow-1 container-p-y">
+        <!-- Layout Demo -->
+        <div class="row">
+          <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <h5 class="mb-0"> Update Country Form</h5>
+            </div>
+            <div class="card-body">
+              <form action="{% url 'countupdate' countryobj.slug %}" enctype="multipart/form-data" method="post">
+                {% csrf_token %}
+                <div class="row mb-3">
+                  <div class="col-md-6">
+                    <label class="form-label" for="basic-icon-default-fullname">Country Name</label>
+                    <div class="input-group input-group-merge">
+                      <span id="basic-icon-default-fullname2" class="input-group-text">
+                        <i class="bx bx-user"></i>
+                      </span>
+                      <input type="text" class="form-control" id="basic-icon-default-fullname" value="{{countryobj.name}}" placeholder="India" name="country_name"/>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label" for="basic-icon-default-company">Slug</label>
+                    <div class="input-group input-group-merge">
+                      <span id="basic-icon-default-company2" class="input-group-text">
+                        <i class="bx bx-buildings"></i>
+                      </span>
+                      <input type="text" id="basic-icon-default-company" class="form-control" value="{{countryobj.slug}}" placeholder="Slug"  name="slug" />
+                    </div>
+                  </div>
+                </div>
+                <div class="row mb-3">
+                  <div class="col-md-6">
+                    <label class="form-label" for="basic-icon-default-email">Country Code</label>
+                    <div class="input-group input-group-merge">
+                      <span class="input-group-text">
+                        <i class="bx bx-globe me-2"></i>
+                      </span>
+                      <input type="text" id="basic-icon-default-email" class="form-control" value="{{countryobj.code}}" placeholder="Code" name="code"/>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <label for="formFile" class="form-label">Flag</label>
+                    <input class="form-control" type="file" id="formFile" value="{{countryobj.flag}}" name="flag">
+                  </div>
+                </div>
+                <div class="form-check mt-3 mb-3">
+                  <input class="form-check-input" type="checkbox" value="1" id="defaultCheck1" value="{{countryobj.state_available}}" name="state_available"  {% if countryobj.is_state_available %}checked{% endif %}>
+                  <label class="form-check-label" for="state_available"> State Available</label>
+                </div>
+                <div class="mb-3">
+                  <p>Flag:</p>
+                  <img src="{{countryobj.flag.url}}" alt="flag" height="100px">
+                </div>
+                <button type="submit" class="btn btn-primary">Update</button>
+              </form>
+            </div>
+          </div>
+        </div>
+        <!--/ Layout Demo -->
+      </div>
+    </div>
+    <!-- / Content -->
+{% endblock %}

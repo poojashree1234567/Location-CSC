@@ -1,0 +1,161 @@
+{% extends 'html/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="content-wrapper">
+    <div class="container-xxl flex-grow-1 container-p-y">
+        <h4 class="fw-bold py-3 mb-4">
+            <span class="text-muted fw-light">
+                {% if from_country %}
+                    <a href="{% url 'country' %}" style="color: grey;">Country/</a></span> City
+                {% elif from_state %}
+                    <a href="#" style="color: grey;">State/</a></span> City
+                {% endif %}
+            </h4>
+        <div class="container-fluid flex-grow-1 container-p-y">
+            {% if messages %}
+                {% for message in messages %}
+                    {% if message.tags == 'success' %}
+                        <div class="alert alert-success" role="alert">{{ message }}</div>
+                    {% elif message.tags == 'error' %}
+                        <div class="alert alert-danger alert-dismissible" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+
+            <div class="row">
+                <div class="card mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Add City Form</h5>
+                    </div>
+                    <div class="card-body">
+                        {% if stateobj %}
+                        <form action="{% url 'city' countryobj.slug stateobj.slug %}" method="post">
+                        {% else %}
+                        <form action="{% url 'city' countryobj.slug %}" method="post">
+                        {% endif %}
+                            {% csrf_token %}
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label" for="country_name">Country Name</label>
+                                    <input type="text" class="form-control" id="country_name" value="{{ countryobj.name }}" disabled>
+                                    <input type="hidden" id="country_id" name="country_id" value="{{ countryobj.slug }}">
+                                </div>
+                                {% if stateobj %}
+                                <div class="col-md-6" id="state-container">
+                                    <label class="form-label" for="state_name">State Name</label>
+                                    <input type="text" class="form-control" id="state_name" value="{{ stateobj.name }}" disabled>
+                                    <input type="hidden" id="state_id" name="state_id" value="{{ stateobj.slug }}">
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label" for="city_name">City Name</label>
+                                    <input type="text" class="form-control" id="city_name" name="city_name" placeholder="City name" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" for="slug">Slug</label>
+                                    <input type="text" class="form-control" id="slug" name="city_slug" placeholder="slug" required>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Save</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- City Table -->
+            <div class="card">
+                <h5 class="card-header">City Table</h5>
+                <div class="table-responsive text-nowrap">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Sr. No.</th>
+                                <th>Country</th>
+                                <th>State</th>
+                                <th>City Name</th>
+                                <th>Slug</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody class="table-border-bottom-0">
+                            {% for city in cityobj %}
+                                <tr>
+                                    <td><strong>{{ forloop.counter }}</strong></td>
+                                    <td>{{ city.country.name }}</td>
+                                    <td>{% if city.state %}{{ city.state.name }}{% else %}No state{% endif %}</td>
+                                    <td>{{ city.name }}</td>
+                                    <td>{{ city.slug }}</td>
+                                    <td><a href="{% url 'togglecity' city.slug %}">
+                                        {% if city.is_active %}
+                                        <span class="badge bg-label-success me-1">Active</span>
+                                        {% else %}
+                                        <span class="badge bg-label-danger me-1">In-active</span>
+                                        {% endif %}
+                                        </a></td>
+                                    <td>
+                                        <div class="dropdown">
+                                            <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
+                                                <i class="bx bx-dots-vertical-rounded"></i>
+                                            </button>
+                                            <div class="dropdown-menu">
+                                                <a class="dropdown-item" href="{% url 'cityupdate' city.slug %}"><i class="bx bx-edit-alt me-1"></i> Edit</a>
+                                                <form action="{% url 'citydelete' city.slug %}">
+                                                    <input type="hidden" value="{{ item.slug }}" name="del_id" />
+                                                    <button class="dropdown-item" type="submit"><i class="bx bx-trash me-1"></i> Delete</button>
+                                                </form>                                           
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <nav aria-label="Page navigation example">
+                        <ul class="pagination justify-content-center">
+                            {% if cityobj.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ cityobj.previous_page_number }}" aria-label="Previous">
+                                        <span aria-hidden="true">&laquo;</span>
+                                    </a>
+                                </li>
+                            {% endif %}
+                            {% for num in cityobj.paginator.page_range %}
+                                {% if cityobj.number == num %}
+                                    <li class="page-item active"><a class="page-link" href="#">{{ num }}</a></li>
+                                {% elif num > cityobj.number|add:'-3' and num < cityobj.number|add:'3' %}
+                                    <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+                                {% endif %}
+                            {% endfor %}
+                            {% if cityobj.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ cityobj.next_page_number }}" aria-label="Next">
+                                        <span aria-hidden="true">&raquo;</span>
+                                    </a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var stateContainer = document.getElementById('state-container');
+    var stateInput = document.getElementById('state_id');
+    
+    if (!stateInput.value) {
+        stateContainer.style.display = 'none';
+    }
+});
+</script>
+{% endblock %}
